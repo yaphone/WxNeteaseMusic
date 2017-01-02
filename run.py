@@ -9,9 +9,11 @@ def main():
     username = 'zhouyaphone@163.com'
     password = 'WO19891226'
     password = hashlib.md5(password.encode('utf-8')).hexdigest()
-    login_info = netease.login(username, password)
-    print login_info.get('message') + " " + login_info.get('captchaId')
-    userId = login_info.get('profile').get('userId') #用户歌单
+    #login_info = netease.login(username, password)
+    #print login_info
+    #print str(login_info.get('message')) + " " + login_info.get('captchaId')
+    #userId = login_info.get('profile').get('userId') #用户歌单
+	userId = 57542828
     playlist = netease.user_playlist(userId) #用户歌单
     if playlist == -1:
         return

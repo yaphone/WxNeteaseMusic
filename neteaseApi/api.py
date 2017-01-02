@@ -28,7 +28,12 @@ import base64
 import binascii
 import sys
 import crypto
-sys.modules['Crypto'] = crypto
+
+try:
+    from Crypto.Cipher import AES
+except:
+    sys.modules['Crypto'] = crypto
+    from Crypto.Cipher import AES
 
 from Crypto.Cipher import AES
 from http.cookiejar import LWPCookieJar
