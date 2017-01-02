@@ -1,8 +1,0 @@
-src/*.pyc
-src/doubanfmapi.py
-build/
-dist/
-NetEase_MusicBox.egg-info/
-setup.cfg
-requirements.txt
-
