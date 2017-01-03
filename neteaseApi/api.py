@@ -141,21 +141,24 @@ def geturl(song):
     if song['hMusic'] and quality <= 0:
         music = song['hMusic']
         quality = 'HD'
+        play_time = str(music['playTime'])
     elif song['mMusic'] and quality <= 1:
         music = song['mMusic']
         quality = 'MD'
+        play_time = str(music['playTime'])
     elif song['lMusic'] and quality <= 2:
         music = song['lMusic']
         quality = 'LD'
+        play_time = str(music['playTime'])
     else:
-        return song['mp3Url'], ''
-
+        play_time = 0
+        return song['mp3Url'], '', play_time
     quality = quality + ' {0}k'.format(music['bitrate'] // 1000)
     song_id = str(music['dfsId'])
     enc_id = encrypted_id(song_id)
     url = 'http://m%s.music.126.net/%s/%s.mp3' % (random.randrange(1, 3),
                                                   enc_id, song_id)
-    return url, quality
+    return url, quality, play_time
 
 
 def geturl_new_api(song):
@@ -624,8 +627,7 @@ class NetEase(object):
         temp = []
         if dig_type == 'songs' or dig_type == 'fmsongs':
             for i in range(0, len(data)):
-                url, quality = geturl(data[i])
-
+                url, quality, play_time = geturl(data[i])
                 if data[i]['album'] is not None:
                     album_name = data[i]['album']['name']
                     album_id = data[i]['album']['id']
@@ -640,7 +642,8 @@ class NetEase(object):
                     'album_name': album_name,
                     'album_id': album_id,
                     'mp3_url': url,
-                    'quality': quality
+                    'quality': quality,
+                    'playTime': play_time
                 }
                 if 'artist' in data[i]:
                     song_info['artist'] = data[i]['artist']
