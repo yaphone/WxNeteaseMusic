@@ -24,7 +24,8 @@ def main():
     #print title
     #for data in datalist:
     #    print str(data.get('playlist_id')) + " " + data.get('creator_name') + " " + data.get('playlists_name')
-    songs = netease.playlist_detail(57542828)  #歌单详情
+    #songs = netease.playlist_detail(556989108)  #歌单详情
+    songs = netease.playlist_detail(57542828)  # 歌单详情
     datalist = netease.dig_info(songs, 'songs')
     music_list = []
     for data in datalist:
@@ -35,10 +36,12 @@ def main():
         music_info.setdefault("mp3_url", data.get("mp3_url"))
         music_info.setdefault("playTime", data.get("playTime"))  #音乐时长
         music_list.append(music_info)
+        music_info.setdefault("quality", data.get("quality"))
+'''
     for music in music_list:
         for key, value in music.items():
             print key, value
-
+'''
  #   print songs
 
 

@@ -156,7 +156,7 @@ def geturl(song):
     quality = quality + ' {0}k'.format(music['bitrate'] // 1000)
     song_id = str(music['dfsId'])
     enc_id = encrypted_id(song_id)
-    url = 'http://m%s.music.126.net/%s/%s.mp3' % (random.randrange(1, 3),
+    url = 'http://m%s.music.126.net/%s/%s.mp3' % (2,
                                                   enc_id, song_id)
     return url, quality, play_time
 
