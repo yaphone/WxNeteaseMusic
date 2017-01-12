@@ -119,7 +119,6 @@ class Player(object):
                     self.popen_handler.stdin.flush()
                     self.popen_handler.kill()
                     break
-
             if self.playing_flag:
                 self.next_idx()
                 onExit()
