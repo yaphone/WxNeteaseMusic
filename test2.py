@@ -1,4 +1,4 @@
-#coding=utf-8
+#coding:utf-8
 import threading
 import time
 
@@ -13,7 +13,7 @@ class Test1(threading.Thread):
         while True:
             print "Hello"
             con.notifyAll()
-            con.wait()
+            con.wait(3)
 
 class Test2(threading.Thread):
     def __init__(self):
@@ -22,14 +22,16 @@ class Test2(threading.Thread):
     def run(self):
         self.con.acquire()
         while True:
-            print "请输入："
-            s = raw_input()
-            print "输入：" + s
-            con.notifyAll()
-            con.wait()
+            print "Please input:"
+            #s = raw_input()
+            #print "input:" + s
+            #con.notifyAll()
+            #con.wait()
+            time.sleep(1)
 
 t1 = Test1()
 t2 = Test2()
-t2.start()
 t1.start()
+t2.start()
+
 

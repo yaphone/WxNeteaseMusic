@@ -14,46 +14,43 @@ music = [music_list_1, music_list_2, music_list_3]
 class Player(threading.Thread):
     def __init__(self):
         super(Player, self).__init__()
-        self.play_list = playlist
-        self.con = con
 
     def run(self):
-        self.con.acquire()
-        print playlist
         while True:
-            if len(self.play_list) != 0:
+            con.acquire()
+            if len(playlist) != 0:
                 #循环播放，取出第一首歌曲，放在最后的位置，类似一个循环队列
-                print self.play_list
-                song = self.play_list[0]
-                self.play_list.remove(song)
-                self.play_list.append(song)
+                #print playlist
+                song = playlist[0]
+                playlist.remove(song)
+                playlist.append(song)
                 for key, val in song.items():
                     print key, val
-                self.con.notifyAll()
-                #self.con.wait(int(song.get('playTime'))/10000)
-                self.con.wait()
+                con.notifyAll()
+                #self.con.wait(int(song.get('playTime'))/100000)
+                con.wait(3)
 
 class Wechat(threading.Thread):
     def __init__(self):
         super(Wechat, self).__init__()
-        self.con = con
     def run(self):
         global playlist
-        self.con.acquire()
         while True:
-            s = raw_input()
+            con.acquire()
+            print "请输入选项："
+            #s = raw_input()
+            s = 1
             try:
                 s = int(s)
                 playlist = music[s]
-                print playlist
-                self.con.notifyAll()
-                self.con.wait()
+                #print playlist
+                con.notifyAll()
+                con.wait()
             except:
-                print "请输入数字"
+                print "错误"
 
 if __name__ == '__main__':
     t1 = Player()
     t2 = Wechat()
-
     t2.start()
     t1.start()
