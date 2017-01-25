@@ -2,6 +2,7 @@
 
 import itchat
 import threading
+import time
 
 con = threading.Condition()
 playlist = []
@@ -10,6 +11,10 @@ music_list_1 = music_list[0:2]
 music_list_2 = music_list[2:4]
 music_list_3 = music_list[4:6]
 music = [music_list_1, music_list_2, music_list_3]
+
+def begin():
+    itchat.auto_login()
+    itchat.run()
 
 @itchat.msg_register(itchat.content.TEXT)
 def print_content(msg):
@@ -22,7 +27,15 @@ def print_content(msg):
     except:
         print "输入有误"
 
+def play():
+    while True:
+        if con.acquire():
+            print "Hello"
+            time.sleep(1)
+
 if __name__ == '__main__':
-    itchat.auto_login()
-    itchat.run()
-    t1 = threading.Thread(target=print_content)
+    t1 = threading.Thread(target=begin)
+    t2 = threading.Thread(target=play)
+    t1.start()
+    t2.start()
+
