@@ -3,18 +3,13 @@
 import itchat
 import threading
 from api import get_music_list
+from menu import help_msg
 
 con = threading.Condition()
 
 global playlist, music_list, help_msg
-playlist = []
+playlist = get_music_list()
 music_list = get_music_list()
-help_msg = u"1. H(elp): 帮助信息\n" \
-           u"2. L(ogin): 登陆网易云音乐\n" \
-           u"3. M(usicList): 音乐歌单\n" \
-           u"4. P(revious): 上一曲\n" \
-           u"5. N(ext): 下一曲\n"
-
 music_list_1 = music_list[0:2]
 music_list_2 = music_list[2:4]
 music_list_3 = music_list[4:6]
@@ -28,7 +23,6 @@ def begin():
 def mp3_player(msg):
     text = msg['Text']
     res = msg_handler(text)
-    #print res
     return res
     '''
     try:
@@ -44,8 +38,40 @@ def mp3_player(msg):
     '''
 
 def msg_handler(msg):
-    if msg == u'H':
-        return help_msg
+    res = ""
+    if msg == u'H': #帮助信息
+        res = help_msg
+    elif msg == u'N': #下一曲
+        pass
+    elif msg == u'P': #上一曲
+        pass
+    elif msg == u'M': #播放列表
+        res = ""
+        i = 0
+        for song in playlist:
+            res += str(i) + ". " + song["song_name"] + "\n"
+            i += 1
+        print res
+    else:
+        try:
+            index = int(msg)
+            if index > len(playlist) - 1:
+                res = u"输入不正确"
+            else:
+                if con.acquire():
+                    song = playlist[index]
+                    playlist.remove(song)
+                    playlist.append(song)
+                    #for key, val in song.items():
+                    #    print key, val
+                    con.notifyAll()
+                    # self.con.wait(int(song.get('playTime'))/100000)
+                    con.wait(10)
+
+        except:
+            res = u'错误'
+
+    return res
 
 def play():
     while True:
@@ -70,5 +96,5 @@ if __name__ == '__main__':
     t1 = threading.Thread(target=begin)
     t2 = threading.Thread(target=play)
     t1.start()
-    t2.start()
+    #t2.start()
 

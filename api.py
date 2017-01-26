@@ -30,18 +30,19 @@ def get_music_list():
     music_list = []
     for data in datalist:
         music_info = {}
-        music_info.setdefault("歌曲名称：", data.get("song_name"))
-        music_info.setdefault("歌手：", data.get("artist"))
-        music_info.setdefault("专辑：", data.get("album_name"))
+        music_info.setdefault("song_name", data.get("song_name"))
+        music_info.setdefault("artist", data.get("artist"))
+        music_info.setdefault("album_name", data.get("album_name"))
         music_info.setdefault("mp3_url", data.get("mp3_url"))
         music_info.setdefault("playTime", data.get("playTime"))  #音乐时长
         music_info.setdefault("quality", data.get("quality"))
         music_list.append(music_info)
     return music_list
-#    for music in music_list:
-#        for key,value in music.items():
-#            print key, value
-#        print music
+    #return music_list
+    #for music in music_list:
+        #for key,value in music.items():
+        #    print key, value
+    #    print music
 '''
     for music in music_list:
         for key, value in music.items():
