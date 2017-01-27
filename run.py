@@ -4,14 +4,16 @@ import itchat
 import threading
 import time
 import subprocess
-from myapi import get_music_list, login, get_user_playlist
+#from myapi import get_music_list, login, get_user_playlist
+from myapi import MyNetease
 from menu import help_msg
 
 con = threading.Condition()
 
-global playlist, music_list, help_msg, userId
-playlist = get_music_list()
-music_list = get_music_list()
+global playlist, music_list, help_msg, userId, myNetease
+myNetease = MyNetease()
+playlist = myNetease.get_music_list()
+music_list = myNetease.get_music_list()
 userId = int(open("./userInfo", 'r').read())
 music_list_1 = music_list[0:2]
 music_list_2 = music_list[2:4]
@@ -20,7 +22,7 @@ music = [music_list_1, music_list_2, music_list_3]
 
 def begin():
     itchat.auto_login()
-    itchat.run(debug=False)
+    itchat.run(debug=True)
 
 @itchat.msg_register(itchat.content.TEXT)
 def mp3_player(msg):
@@ -41,6 +43,7 @@ def mp3_player(msg):
     '''
 
 def msg_handler(args):
+    global myNetease
     arg_list = args.split(" ")    #以空格为分割符
     if len(arg_list) == 1:  #如果接收长度为1
         msg = arg_list[0]
@@ -54,7 +57,7 @@ def msg_handler(args):
         elif msg == u'P': #上一曲
             pass
         elif msg == u'U':  #用户歌单
-            user_playlist = get_user_playlist(userId)
+            user_playlist = myNetease.get_user_playlist(userId)
             #print user_playlist
             if user_playlist == -1:
                 res = u"用户播放列表为空"
@@ -63,7 +66,7 @@ def msg_handler(args):
                 for data in user_playlist:
                     res += str(index) + ". " + data['playlists_name'] + "\n"
                     index += 1
-                #print res
+                print res
 
         elif msg == u'M': #当前歌单播放列表
             res = ""
@@ -87,7 +90,7 @@ def msg_handler(args):
         arg1 = arg_list[0]
         arg2 = arg_list[1]
         if arg1 == u"U":
-            user_playlist = get_user_playlist(userId)
+            user_playlist = myNetease.get_user_playlist(userId)
             # print user_playlist
             if user_playlist == -1:
                 res = u"用户播放列表为空"
@@ -106,7 +109,7 @@ def msg_handler(args):
         arg2 = arg_list[1]
         arg3 = arg_list[2]
         if arg1 == u'L':
-            res = login(arg2, arg3)
+            res = myNetease.login(arg2, arg3)
 
     return res
 
