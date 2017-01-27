@@ -20,6 +20,7 @@ def get_music_list():
         return
     datatype = 'top_playlists'
     datalist = netease.dig_info(playlist, datatype)
+    #print datalist
     title =  username + ' 的歌单'
     #print title
     #for data in datalist:
@@ -56,7 +57,13 @@ def login(username, password):
 
 def get_user_playlist(userId):  #获取用户歌单
     netease = api.NetEase()
-    return netease.user_playlist(userId)
+    playlist = netease.user_playlist(userId)  # 用户歌单
+    if playlist == -1:
+        datalist = -1
+    else:
+        datatype = 'top_playlists'
+        datalist = netease.dig_info(playlist, datatype)
+    return datalist
 
 
 if __name__ == '__main__':

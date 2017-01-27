@@ -57,9 +57,13 @@ def msg_handler(args):
             user_playlist = get_user_playlist(userId)
             #print user_playlist
             if user_playlist == -1:
-                res = u"用户列表为空"
+                res = u"用户播放列表为空"
             else:
-
+                index = 0
+                for data in user_playlist:
+                    res += str(index) + ". " + data['playlists_name'] + "\n"
+                    index += 1
+                #print res
 
         elif msg == u'M': #当前歌单播放列表
             res = ""
@@ -80,7 +84,22 @@ def msg_handler(args):
             except:
                 res = u'错误'
     if len(arg_list) == 2:  #接收信息长度为2
-        pass
+        arg1 = arg_list[0]
+        arg2 = arg_list[1]
+        if arg1 == u"U":
+            user_playlist = get_user_playlist(userId)
+            # print user_playlist
+            if user_playlist == -1:
+                res = u"用户播放列表为空"
+            else:
+                try:
+                    index = int(arg2)
+                    data = user_playlist[index]
+                    playlist_id = data['playlist_id']
+                    playlist_name = data['playlists_name']
+
+                except:
+                    res = u"输入有误"
 
     if len(arg_list) == 3:   #接收长度为3
         arg1 = arg_list[0]
