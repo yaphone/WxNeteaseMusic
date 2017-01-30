@@ -131,6 +131,7 @@ def play():
                 con.wait(int(song.get('playTime'))/1000)
                 #con.wait(10)
 
+#播放MP3文件
 def sing(mp3_url):
     try:
         subprocess.Popen(['pkill', 'mpg123'])
