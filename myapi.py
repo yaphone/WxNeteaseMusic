@@ -43,7 +43,7 @@ class MyNetease:
             music_list.append(music_info)
         return music_list
 
-    def login(self, username, password):
+    def login(self, username, password): #用户登陆
         #netease = api.NetEase()
         password = hashlib.md5(password.encode('utf-8')).hexdigest()
         #login_info = self.netease.login(username, password)
@@ -62,12 +62,26 @@ class MyNetease:
     def get_user_playlist(self, userId):  #获取用户歌单
         #netease = api.NetEase()
         playlist = self.netease.user_playlist(userId)  # 用户歌单
-        if playlist == -1:
-            datalist = -1
-        else:
-            datatype = 'top_playlists'
-            datalist = self.netease.dig_info(playlist, datatype)
         return playlist
+
+    def get_song_list_by_playlist_id(self, playlist_id):
+        songs = self.netease.playlist_detail(playlist_id)
+        song_list = self.netease.dig_info(songs, 'songs')
+        return song_list
+
+    def search_by_name(self, song_name):
+        data = self.netease.search(song_name)
+        song_ids = []
+        if 'songs' in data['result']:
+            if 'mp3Url' in data['result']['songs']:
+                songs = data['result']['songs']
+
+            else:
+                for i in range(0, len(data['result']['songs'])):
+                    song_ids.append(data['result']['songs'][i]['id'])
+                songs = self.netease.songs_detail(song_ids)
+        song_list = self.netease.dig_info(songs, 'songs')
+        return song_list
 
 
 if __name__ == '__main__':

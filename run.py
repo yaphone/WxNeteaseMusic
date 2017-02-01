@@ -13,12 +13,12 @@ con = threading.Condition()
 global playlist, music_list, help_msg, userId, myNetease
 myNetease = MyNetease()
 playlist = myNetease.get_music_list()
-music_list = myNetease.get_music_list()
+#music_list = myNetease.get_music_list()
 userId = int(open("./userInfo", 'r').read())
-music_list_1 = music_list[0:2]
-music_list_2 = music_list[2:4]
-music_list_3 = music_list[4:6]
-music = [music_list_1, music_list_2, music_list_3]
+#music_list_1 = music_list[0:2]
+#music_list_2 = music_list[2:4]
+#music_list_3 = music_list[4:6]
+#music = [music_list_1, music_list_2, music_list_3]
 
 def begin():
     itchat.auto_login()
@@ -64,9 +64,9 @@ def msg_handler(args):
             else:
                 index = 0
                 for data in user_playlist:
-                    res += str(index) + ". " + data['playlists_name'] + "\n"
+                    res += str(index) + ". " + data['name'] + "\n"
                     index += 1
-                print res
+                res += u"\n 输入 U 序号 切换歌单"
 
         elif msg == u'M': #当前歌单播放列表
             res = ""
@@ -74,6 +74,15 @@ def msg_handler(args):
             for song in playlist:
                 res += str(i) + ". " + song["song_name"] + "\n"
                 i += 1
+        elif msg == u"R": #当前正在播放的歌曲信息
+            song_info = playlist[-1]
+            artist = song_info.get("artist")
+            song_name = song_info.get("song_name")
+            album_name = song_info.get("album_name")
+            res = u"歌曲：" + song_name + u"\n歌手：" + artist + u"\n专辑：" + album_name
+        elif msg == u"S": #单曲搜索
+            res = u"回复S 歌曲名 进行搜索"
+
         else:
             try:
                 index = int(msg)
@@ -83,7 +92,6 @@ def msg_handler(args):
                     if con.acquire():
                         con.notifyAll()
                         con.release()
-
             except:
                 res = u'错误'
     if len(arg_list) == 2:  #接收信息长度为2
@@ -98,18 +106,51 @@ def msg_handler(args):
                 try:
                     index = int(arg2)
                     data = user_playlist[index]
-                    playlist_id = data['playlist_id']
-                    playlist_name = data['playlists_name']
+                    playlist_id = data['id']   #歌单序号
+                    playlist_name = data['name']  #歌单名称
+                    song_list = myNetease.get_song_list_by_playlist_id(playlist_id)
+                    global playlist
+                    playlist = song_list
+                    res = u"播放列表切换成功，回复M可查看当前播放列表"
+                    if con.acquire():
+                        con.notifyAll()
+                        con.release()
 
                 except:
                     res = u"输入有误"
+        elif arg1 == u"S":
+            song_name = arg2
+            song_list = myNetease.search_by_name(song_name)
+            res = ""
+            i = 0
+            for song in song_list:
+                res += str(i) + ". " + song["song_name"] + "\n"
+                i += 1
+            res += u"回复（S 歌曲名 序号）播放对应歌曲"
 
     if len(arg_list) == 3:   #接收长度为3
         arg1 = arg_list[0]
         arg2 = arg_list[1]
         arg3 = arg_list[2]
-        if arg1 == u'L':
-            res = myNetease.login(arg2, arg3)
+        try:
+            if arg1 == u'L':  #用户登陆
+                res = myNetease.login(arg2, arg3)
+            elif arg1 == u"S":
+                song_name = arg2
+                song_list = myNetease.search_by_name(song_name)
+                index = int(arg3)
+                song = song_list[index]
+                #把song放在播放列表的第一位置，唤醒播放线程，立即播放
+                playlist.insert(0, song)
+                if con.acquire():
+                    con.notifyAll()
+                    con.release()
+                artist = song.get("artist")
+                song_name = song.get("song_name")
+                album_name = song.get("album_name")
+                res = u"歌曲：" + song_name + u"\n歌手：" + artist + u"\n专辑：" + album_name
+        except:
+            res = u"错误"
 
     return res
 
