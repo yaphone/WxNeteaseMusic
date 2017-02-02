@@ -175,12 +175,15 @@ def play():
 #播放MP3文件
 def sing(mp3_url):
     try:
-        subprocess.Popen(['pkill', 'mpg123'])
+        console_info = subprocess.Popen(['pkill', 'mpg123'])
+        #print console_info
         time.sleep(.3)
     except:
         pass
     finally:
-        subprocess.Popen(['mpg123', mp3_url])
+        console_info = subprocess.Popen('mpg123 ' + mp3_url, shell=True, stdout=subprocess.PIPE)
+        #return console_info.stdout.read()
+        print console_info.stdout
 
 
 
