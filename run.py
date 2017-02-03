@@ -181,6 +181,7 @@ def sing(mp3_url):
     except:
         pass
     finally:
+        #如果console_info信息包含“fail”字样，说明播放失败，播放下一曲
         console_info = subprocess.Popen('mpg123 ' + mp3_url, shell=True, stdout=subprocess.PIPE)
         #return console_info.stdout.read()
         print console_info.stdout
