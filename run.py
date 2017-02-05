@@ -1,5 +1,4 @@
 #coding=utf-8
-
 import itchat
 import threading
 import time
@@ -115,7 +114,6 @@ def msg_handler(args):
                     if con.acquire():
                         con.notifyAll()
                         con.release()
-
                 except:
                     res = u"输入有误"
         elif arg1 == u"S":
