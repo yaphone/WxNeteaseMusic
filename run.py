@@ -173,8 +173,8 @@ def play():
 #播放MP3文件
 def sing(mp3_url):
     try:
-        console_info = subprocess.Popen(['pkill', 'mpg123'], shell=True, stdout=subprocess.PIPE)
-        print console_info.stdout.read().decode('gbk')
+        console_info = subprocess.Popen('pkill mpg123', shell=True, stdout=subprocess.PIPE)
+        #print console_info.stdout.read().decode('gbk')
         time.sleep(.3)
     except:
         pass
@@ -182,7 +182,7 @@ def sing(mp3_url):
         #如果console_info信息包含“fail”字样，说明播放失败，自动播放下一曲
         console_info = subprocess.Popen('mpg123 ' + mp3_url, shell=True, stdout=subprocess.PIPE)
         #return console_info.stdout.read()
-        print console_info.stdout.read().decode('gbk')
+        #print console_info.stdout.read()
 
 
 
