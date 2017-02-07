@@ -18,7 +18,7 @@ t.start()
 
 #print p.stdout.read()
 try:
-    line = q.get(timeout=4000000)
+    line = q.get(timeout=5)
 except:
     print "***********"
 else:
