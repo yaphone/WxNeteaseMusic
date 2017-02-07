@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/RasNetEaseMusic.iml" filepath="$PROJECT_DIR$/.idea/RasNetEaseMusic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/RasNeteaseMusic.iml" filepath="$PROJECT_DIR$/.idea/RasNeteaseMusic.iml" />
     </modules>
   </component>
 </project>

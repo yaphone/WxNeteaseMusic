@@ -6,6 +6,8 @@ import subprocess
 #from myapi import get_music_list, login, get_user_playlist
 from myapi import MyNetease
 from menu import help_msg
+import fcntl
+import os
 
 con = threading.Condition()
 
@@ -21,7 +23,7 @@ userId = int(open("./userInfo", 'r').read())
 
 def begin():
     itchat.auto_login()
-    itchat.run(debug=True)
+    itchat.run(debug=False)
 
 @itchat.msg_register(itchat.content.TEXT)
 def mp3_player(msg):
@@ -164,25 +166,44 @@ def play():
                 #for key, val in song.items():
                 #    print key, val
                 mp3_url = song["mp3_url"]
-                sing(mp3_url)
+                play_info = sing(mp3_url)
+                print "****************"
+                print play_info
+                print "------------------"
+
+                #if "failed" not in play_info: #播放成功
                 con.notifyAll()
                 # self.con.wait(int(song.get('playTime'))/100000)
                 con.wait(int(song.get('playTime'))/1000)
-                #con.wait(10)
+                    #con.wait(10)
+                #else:#播放失败，自动播放下一首
+                    #con.notifyAll()
+                    #con.wait(1)
+
 
 #播放MP3文件
 def sing(mp3_url):
     try:
         console_info = subprocess.Popen('pkill mpg123', shell=True, stdout=subprocess.PIPE)
-        #print console_info.stdout.read().decode('gbk')
-        time.sleep(.3)
+        #print non_block_read(console_info.stdout)
     except:
         pass
     finally:
         #如果console_info信息包含“fail”字样，说明播放失败，自动播放下一曲
         console_info = subprocess.Popen('mpg123 ' + mp3_url, shell=True, stdout=subprocess.PIPE)
         #return console_info.stdout.read()
-        #print console_info.stdout.read()
+        play_info = non_block_read(console_info.stdout)
+        return play_info
+
+#非阻塞方法读stdout
+def non_block_read(output):
+    fd = output.fileno()
+    fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+    fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+    try:
+        return output.read()
+    except:
+        return ""
 
 
 
