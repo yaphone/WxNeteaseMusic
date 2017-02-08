@@ -3,7 +3,6 @@ import itchat
 import threading
 import time
 import subprocess
-#from myapi import get_music_list, login, get_user_playlist
 from myapi import MyNetease
 from menu import help_msg
 import fcntl
@@ -14,12 +13,7 @@ con = threading.Condition()
 global playlist, music_list, help_msg, userId, myNetease
 myNetease = MyNetease()
 playlist = myNetease.get_music_list()
-#music_list = myNetease.get_music_list()
 userId = int(open("./userInfo", 'r').read())
-#music_list_1 = music_list[0:2]
-#music_list_2 = music_list[2:4]
-#music_list_3 = music_list[4:6]
-#music = [music_list_1, music_list_2, music_list_3]
 
 def begin():
     itchat.auto_login()
@@ -30,18 +24,6 @@ def mp3_player(msg):
     text = msg['Text']
     res = msg_handler(text)
     return res
-    '''
-    try:
-        num = int(text)
-        global playlist
-        playlist = music[num]
-        if con.acquire():
-            con.notifyAll()
-            con.release()
-        #print playlist
-    except:
-        print "输入有误"
-    '''
 
 def msg_handler(args):
     global myNetease
@@ -108,7 +90,6 @@ def msg_handler(args):
                     index = int(arg2)
                     data = user_playlist[index]
                     playlist_id = data['id']   #歌单序号
-                    playlist_name = data['name']  #歌单名称
                     song_list = myNetease.get_song_list_by_playlist_id(playlist_id)
                     global playlist
                     playlist = song_list
@@ -174,11 +155,10 @@ def play():
 #播放MP3文件
 def sing(mp3_url):
     try:
-        console_info = subprocess.Popen('pkill mpg123', shell=True, stdout=subprocess.PIPE)
+        subprocess.Popen('pkill mpg123', shell=True, stdout=subprocess.PIPE)
     except:
         pass
     finally:
-        #如果console_info信息包含“fail”字样，说明播放失败，自动播放下一曲
         subprocess.Popen('mpg123 ' + mp3_url, shell=True, stdout=subprocess.PIPE)
 
 
