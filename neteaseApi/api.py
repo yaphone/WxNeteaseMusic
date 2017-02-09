@@ -430,6 +430,7 @@ class NetEase(object):
             playlist_id)
         try:
             data = self.httpRequest('GET', action)
+            return data
             return data['result']['tracks']
         except requests.exceptions.RequestException as e:
             log.error(e)
