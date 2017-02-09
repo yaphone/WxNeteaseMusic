@@ -36,6 +36,7 @@ def msg_handler(args):
             if con.acquire():
                 con.notifyAll()
                 con.release()
+            res = u'切换成功，正在播放: ' + playlist[0].get('song_name')
         elif msg == u'P': #上一曲
             pass
         elif msg == u'U':  #用户歌单
@@ -56,7 +57,7 @@ def msg_handler(args):
             for song in playlist:
                 res += str(i) + ". " + song["song_name"] + "\n"
                 i += 1
-        elif msg == u"R": #当前正在播放的歌曲信息
+        elif msg == u'R': #当前正在播放的歌曲信息
             song_info = playlist[-1]
             artist = song_info.get("artist")
             song_name = song_info.get("song_name")
@@ -80,7 +81,7 @@ def msg_handler(args):
         arg1 = arg_list[0]
         arg2 = arg_list[1]
         if arg1 == u"U":
-            user_playlist = myNetease.get_user_playlist(userId)
+            user_playlist = myNetease.get_user_playlist()
             # print user_playlist
             if user_playlist == -1:
                 res = u"用户播放列表为空"
