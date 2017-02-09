@@ -11,8 +11,8 @@ con = threading.Condition()
 
 global playlist, music_list, help_msg, userId, myNetease
 myNetease = MyNetease()
-playlist = myNetease.get_music_list()
-#userId = int(open("./userInfo", 'r').read())
+#playlist = myNetease.get_music_list()
+playlist = []
 
 def begin():
     itchat.auto_login()
@@ -41,7 +41,6 @@ def msg_handler(args):
             pass
         elif msg == u'U':  #用户歌单
             user_playlist = myNetease.get_user_playlist()
-            #print user_playlist
             if user_playlist == -1:
                 res = u"用户播放列表为空"
             else:
@@ -53,6 +52,8 @@ def msg_handler(args):
 
         elif msg == u'M': #当前歌单播放列表
             res = ""
+            if len(playlist) == 0:
+                res = u"当前播放列表为空，请回复 (U) 选择播放列表"
             i = 0
             for song in playlist:
                 res += str(i) + ". " + song["song_name"] + "\n"
@@ -82,7 +83,6 @@ def msg_handler(args):
         arg2 = arg_list[1]
         if arg1 == u"U":
             user_playlist = myNetease.get_user_playlist()
-            # print user_playlist
             if user_playlist == -1:
                 res = u"用户播放列表为空"
             else:
@@ -144,8 +144,6 @@ def play():
                 song = playlist[0]
                 playlist.remove(song)
                 playlist.append(song)
-                #for key, val in song.items():
-                #    print key, val
                 mp3_url = song["mp3_url"]
                 sing(mp3_url)
                 con.notifyAll()
