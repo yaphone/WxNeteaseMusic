@@ -7,6 +7,7 @@ from neteaseApi import api
 class MyNetease:
     def __init__(self):
         self.netease = api.NetEase()
+        self.userId = int(open("./userInfo", 'r').read())
 
     def get_music_list(self):
         #netease = api.NetEase()
@@ -17,7 +18,8 @@ class MyNetease:
         #print login_info
         #print str(login_info.get('message')) + " " + login_info.get('captchaId')
         #userId = login_info.get('profile').get('userId') #用户歌单
-        userId = 57542828
+        #userId = 57542828
+        userId = 376147828
         playlist = self.netease.user_playlist(userId) #用户歌单
         #print playlist
         if playlist == -1:
@@ -51,6 +53,7 @@ class MyNetease:
             res = u"登陆成功"
             #登陆成功保存userId，作为获取用户歌单的依据，userId是唯一的，只要登陆成功，就会保存在userInfo文件中，所以不必每次都登陆
             userId = login_info.get('profile').get('userId')
+            self.userId = userId
             file = open("./userInfo", 'w')
             file.write(str(userId))
             file.close()
@@ -58,8 +61,8 @@ class MyNetease:
             res = u"登陆失败"
         return res
 
-    def get_user_playlist(self, userId):  #获取用户歌单
-        playlist = self.netease.user_playlist(userId)  # 用户歌单
+    def get_user_playlist(self):  #获取用户歌单
+        playlist = self.netease.user_playlist(self.userId)  # 用户歌单
         return playlist
 
     def get_song_list_by_playlist_id(self, playlist_id):

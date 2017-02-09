@@ -5,7 +5,6 @@ import time
 import subprocess
 from myapi import MyNetease
 from menu import help_msg
-import fcntl
 import os
 
 con = threading.Condition()
@@ -13,7 +12,7 @@ con = threading.Condition()
 global playlist, music_list, help_msg, userId, myNetease
 myNetease = MyNetease()
 playlist = myNetease.get_music_list()
-userId = int(open("./userInfo", 'r').read())
+#userId = int(open("./userInfo", 'r').read())
 
 def begin():
     itchat.auto_login()
@@ -40,7 +39,7 @@ def msg_handler(args):
         elif msg == u'P': #上一曲
             pass
         elif msg == u'U':  #用户歌单
-            user_playlist = myNetease.get_user_playlist(userId)
+            user_playlist = myNetease.get_user_playlist()
             #print user_playlist
             if user_playlist == -1:
                 res = u"用户播放列表为空"
