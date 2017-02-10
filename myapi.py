@@ -9,7 +9,21 @@ class MyNetease:
         self.netease = api.NetEase()
         self.userId = int(open("./userInfo", 'r').read())
 
-    def get_music_list(self):
+    def get_recommend_playlist(self): # 每日推荐歌单
+        music_list = self.netease.recommend_playlist()
+        datalist = self.netease.dig_info(music_list, 'songs')
+        playlist = []
+        for data in datalist:
+            music_info = {}
+            music_info.setdefault("song_name", data.get("song_name"))
+            music_info.setdefault("artist", data.get("artist"))
+            music_info.setdefault("album_name", data.get("album_name"))
+            music_info.setdefault("mp3_url", data.get("mp3_url"))
+            music_info.setdefault("playTime", data.get("playTime"))  # 音乐时长
+            music_info.setdefault("quality", data.get("quality"))
+            playlist.append(music_info)
+        return playlist
+        '''
         playlist = self.netease.user_playlist(self.userId) #用户歌单
         if playlist == -1:
             return
@@ -28,6 +42,23 @@ class MyNetease:
             music_info.setdefault("quality", data.get("quality"))
             music_list.append(music_info)
         return music_list
+        '''
+
+    def get_top_songlist(self):#热门单曲
+        music_list = self.netease.top_songlist()
+        datalist = self.netease.dig_info(music_list, 'songs')
+        playlist = []
+        for data in datalist:
+            music_info = {}
+            music_info.setdefault("song_name", data.get("song_name"))
+            music_info.setdefault("artist", data.get("artist"))
+            music_info.setdefault("album_name", data.get("album_name"))
+            music_info.setdefault("mp3_url", data.get("mp3_url"))
+            music_info.setdefault("playTime", data.get("playTime"))  # 音乐时长
+            music_info.setdefault("quality", data.get("quality"))
+            print music_info
+            playlist.append(music_info)
+        return playlist
 
     def login(self, username, password): #用户登陆
         password = hashlib.md5(password.encode('utf-8')).hexdigest()

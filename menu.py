@@ -1,9 +1,11 @@
 #coding=utf-8
 
-help_msg = u"1. H(elp): 帮助信息\n" \
-           u"2. L(ogin): 登陆网易云音乐\n" \
-           u"3. M(usicList): 音乐歌单\n" \
-           u"4. P(revious): 上一曲\n" \
-           u"5. N(ext): 下一曲\n"\
-           u"6. U(serlist): 用户歌单\n"\
-           u"7. R(*******): 正在播放\n"\
+help_msg =  u"1. H: 帮助信息\n" \
+            u"2. L: 登陆网易云音乐\n" \
+            u"3. M: 播放列表\n" \
+            u"4. N: 下一曲\n"\
+            u"5. U: 用户歌单\n"\
+            u"6. R: 正在播放\n"\
+            u"7. S: 歌曲搜索\n"\
+            u"8. T: 热门单曲\n"\
+            u"9. G: 推荐单曲\n"

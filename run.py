@@ -11,12 +11,12 @@ con = threading.Condition()
 
 global playlist, music_list, help_msg, userId, myNetease
 myNetease = MyNetease()
-#playlist = myNetease.get_music_list()
-playlist = []
+playlist = myNetease.get_music_list()
+#playlist = []
 
 def begin():
     itchat.auto_login()
-    itchat.run(debug=False)
+    itchat.run(debug=True)
 
 @itchat.msg_register(itchat.content.TEXT)
 def mp3_player(msg):
@@ -26,7 +26,7 @@ def mp3_player(msg):
 
 def msg_handler(args):
     global myNetease
-    arg_list = args.split(" ")    #以空格为分割符
+    arg_list = args.split(" ")    #参数以空格为分割符
     if len(arg_list) == 1:  #如果接收长度为1
         msg = arg_list[0]
         res = ""
@@ -38,7 +38,17 @@ def msg_handler(args):
                 con.release()
             res = u'切换成功，正在播放: ' + playlist[0].get('song_name')
         elif msg == u'P': #上一曲
-            pass
+            if len(playlist) < 2:
+                res = u'当前播放列表只有一首歌曲'
+            else:#取出列表中的最后两首歌，放在列表头部
+                s_tmp_playlist = playlist[:-2]
+                e_tmp_playlist = playlist[-2:]
+                global playlist
+                playlist = e_tmp_playlist + s_tmp_playlist
+                res = u'切换成功，正在播放: ' + playlist[0].get('song_name')
+            if con.acquire():
+                con.notifyAll()
+                con.release()
         elif msg == u'U':  #用户歌单
             user_playlist = myNetease.get_user_playlist()
             if user_playlist == -1:
@@ -52,6 +62,7 @@ def msg_handler(args):
 
         elif msg == u'M': #当前歌单播放列表
             res = ""
+            global  playlist
             if len(playlist) == 0:
                 res = u"当前播放列表为空，请回复 (U) 选择播放列表"
             i = 0
@@ -65,7 +76,7 @@ def msg_handler(args):
             album_name = song_info.get("album_name")
             res = u"歌曲：" + song_name + u"\n歌手：" + artist + u"\n专辑：" + album_name
         elif msg == u"S": #单曲搜索
-            res = u"回复S 歌曲名 进行搜索"
+            res = u"回复 (S 歌曲名) 进行搜索"
 
         else:
             try:
@@ -78,7 +89,7 @@ def msg_handler(args):
                         con.release()
             except:
                 res = u'错误'
-    if len(arg_list) == 2:  #接收信息长度为2
+    elif len(arg_list) == 2:  #接收信息长度为2
         arg1 = arg_list[0]
         arg2 = arg_list[1]
         if arg1 == u"U":
@@ -91,7 +102,6 @@ def msg_handler(args):
                     data = user_playlist[index]
                     playlist_id = data['id']   #歌单序号
                     song_list = myNetease.get_song_list_by_playlist_id(playlist_id)
-                    global playlist
                     playlist = song_list
                     res = u"播放列表切换成功，回复M可查看当前播放列表"
                     if con.acquire():
@@ -99,7 +109,16 @@ def msg_handler(args):
                         con.release()
                 except:
                     res = u"输入有误"
-        elif arg1 == u"S":
+        elif arg1 == u'N': #播放第X首歌曲
+            index = int(arg2)
+            tmp_song = playlist[index]
+            playlist.insert(0, tmp_song)
+            if con.acquire():
+                con.notifyAll()
+                con.release()
+            res = u'切换成功，正在播放: ' + playlist[0].get('song_name')
+            del playlist[-1]
+        elif arg1 == u"S": #歌曲搜索+歌曲名
             song_name = arg2
             song_list = myNetease.search_by_name(song_name)
             res = ""
@@ -109,7 +128,7 @@ def msg_handler(args):
                 i += 1
             res += u"回复（S 歌曲名 序号）播放对应歌曲"
 
-    if len(arg_list) == 3:   #接收长度为3
+    elif len(arg_list) == 3:   #接收长度为3
         arg1 = arg_list[0]
         arg2 = arg_list[1]
         arg3 = arg_list[2]
@@ -131,7 +150,7 @@ def msg_handler(args):
                 album_name = song.get("album_name")
                 res = u"歌曲：" + song_name + u"\n歌手：" + artist + u"\n专辑：" + album_name
         except:
-            res = u"错误"
+            res = u"输入错误"
 
     return res
 
