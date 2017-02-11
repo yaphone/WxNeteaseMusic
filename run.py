@@ -2,7 +2,6 @@
 from WxNeteaseMusic import WxNeteaseMusic
 import itchat
 
-
 wnm = WxNeteaseMusic()
 @itchat.msg_register(itchat.content.TEXT)
 def mp3_player(msg):
