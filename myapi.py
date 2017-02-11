@@ -23,26 +23,6 @@ class MyNetease:
             music_info.setdefault("quality", data.get("quality"))
             playlist.append(music_info)
         return playlist
-        '''
-        playlist = self.netease.user_playlist(self.userId) #用户歌单
-        if playlist == -1:
-            return
-        #datatype = 'top_playlists'
-        #datalist = self.netease.dig_info(playlist, datatype)
-        songs = self.netease.playlist_detail(57542828)  # 歌单详情
-        datalist = self.netease.dig_info(songs, 'songs')
-        music_list = []
-        for data in datalist:
-            music_info = {}
-            music_info.setdefault("song_name", data.get("song_name"))
-            music_info.setdefault("artist", data.get("artist"))
-            music_info.setdefault("album_name", data.get("album_name"))
-            music_info.setdefault("mp3_url", data.get("mp3_url"))
-            music_info.setdefault("playTime", data.get("playTime"))  #音乐时长
-            music_info.setdefault("quality", data.get("quality"))
-            music_list.append(music_info)
-        return music_list
-        '''
 
     def get_top_songlist(self):#热门单曲
         music_list = self.netease.top_songlist()
@@ -56,7 +36,6 @@ class MyNetease:
             music_info.setdefault("mp3_url", data.get("mp3_url"))
             music_info.setdefault("playTime", data.get("playTime"))  # 音乐时长
             music_info.setdefault("quality", data.get("quality"))
-            print music_info
             playlist.append(music_info)
         return playlist
 

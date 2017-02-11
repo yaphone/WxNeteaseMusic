@@ -4,14 +4,24 @@ import threading
 import time
 import subprocess
 from myapi import MyNetease
-from menu import help_msg
 import os
+import mp3play
 
 class WxNeteaseMusic:
     def __init__(self):
+        self.help_msg = \
+            u"1. H: 帮助信息\n" \
+            u"2. L: 登陆网易云音乐\n" \
+            u"3. M: 播放列表\n" \
+            u"4. N: 下一曲\n"\
+            u"5. U: 用户歌单\n"\
+            u"6. R: 正在播放\n"\
+            u"7. S: 歌曲搜索\n"\
+            u"8. T: 热门单曲\n"\
+            u"9. G: 推荐单曲\n"
         self.con = threading.Condition()
         self.myNetease = MyNetease()
-        self.playlist = self.myNetease.get_recommend_playlist()
+        self.playlist = self.myNetease.get_top_songlist()  #默认是热门歌单
         t = threading.Thread(target=self.play)
         t.start()
 
@@ -22,7 +32,7 @@ class WxNeteaseMusic:
             arg = arg_list[0]
             res = ""
             if arg == u'H':  # 帮助信息
-                res = help_msg
+                res = self.help_msg
             elif arg == u'N':  # 下一曲
                 if self.con.acquire():
                     self.con.notifyAll()
@@ -45,6 +55,7 @@ class WxNeteaseMusic:
                 for song in self.playlist:
                     res += str(i) + ". " + song["song_name"] + "\n"
                     i += 1
+                res += u'\n回复 (N) 播放下一曲， 回复 (N 序号)播放对应歌曲'
             elif arg == u'R': #当前正在播放的歌曲信息
                 song_info = self.playlist[-1]
                 artist = song_info.get("artist")
@@ -61,6 +72,7 @@ class WxNeteaseMusic:
                 for song in self.playlist:
                     res += str(i) + ". " + song["song_name"] + "\n"
                     i += 1
+                res += u'\n回复 (N) 播放下一曲， 回复 (N 序号)播放对应歌曲'
             elif arg == u'G':#推荐歌单
                 self.playlist = self.myNetease.get_recommend_playlist()
                 if len(self.playlist) == 0:
@@ -69,7 +81,7 @@ class WxNeteaseMusic:
                 for song in self.playlist:
                     res += str(i) + ". " + song["song_name"] + "\n"
                     i += 1
-                self.playlist = self.myNetease.get_recommend_playlist()
+                res += u'\n回复 (N) 播放下一曲， 回复 (N 序号)播放对应歌曲'
 
             else:
                 try:
@@ -96,7 +108,7 @@ class WxNeteaseMusic:
                         playlist_id = data['id']   #歌单序号
                         song_list = self.myNetease.get_song_list_by_playlist_id(playlist_id)
                         self.playlist = song_list
-                        res = u"用户歌单切换成功，回复M可查看当前播放列表"
+                        res = u"用户歌单切换成功，回复 (M) 可查看当前播放列表"
                         if self.con.acquire():
                             self.con.notifyAll()
                             self.con.release()
@@ -110,6 +122,7 @@ class WxNeteaseMusic:
                     self.con.notifyAll()
                     self.con.release()
                 res = u'切换成功，正在播放: ' + self.playlist[0].get('song_name')
+                time.sleep(.5)
                 del self.playlist[-1]
 
             elif arg1 == u"S": #歌曲搜索+歌曲名
@@ -120,7 +133,7 @@ class WxNeteaseMusic:
                 for song in song_list:
                     res += str(i) + ". " + song["song_name"] + "\n"
                     i += 1
-                res += u"回复（S 歌曲名 序号）播放对应歌曲"
+                res += u"\n回复（S 歌曲名 序号）播放对应歌曲"
 
         elif len(arg_list) == 3:   #接收长度为3
             arg1 = arg_list[0]
@@ -157,15 +170,11 @@ class WxNeteaseMusic:
                     self.playlist.remove(song)
                     self.playlist.append(song)
                     mp3_url = song["mp3_url"]
-                    self.sing(mp3_url)
-                    self.con.notifyAll()
-                    self.con.wait(int(song.get('playTime')) / 1000)
+                    try: #有些音乐已失效，自动跳过
+                        mp3 = mp3play.load(mp3_url)
+                        mp3.play()
+                        self.con.notifyAll()
+                        self.con.wait(int(song.get('playTime')) / 1000)
+                    except:
+                        pass
 
-    # 播放MP3文件
-    def sing(self, mp3_url):
-        try:
-            subprocess.Popen('pkill mpg123', shell=True, stdout=subprocess.PIPE)
-        except:
-            pass
-        finally:
-            subprocess.Popen('mpg123 ' + mp3_url, shell=True, stdout=subprocess.PIPE)
