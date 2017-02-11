@@ -10,18 +10,20 @@ import mp3play
 class WxNeteaseMusic:
     def __init__(self):
         self.help_msg = \
-            u"1. H: 帮助信息\n" \
-            u"2. L: 登陆网易云音乐\n" \
-            u"3. M: 播放列表\n" \
-            u"4. N: 下一曲\n"\
-            u"5. U: 用户歌单\n"\
-            u"6. R: 正在播放\n"\
-            u"7. S: 歌曲搜索\n"\
-            u"8. T: 热门单曲\n"\
-            u"9. G: 推荐单曲\n"
+            u"H: 帮助信息\n" \
+            u"L: 登陆网易云音乐\n" \
+            u"M: 播放列表\n" \
+            u"N: 下一曲\n"\
+            u"U: 用户歌单\n"\
+            u"R: 正在播放\n"\
+            u"S: 歌曲搜索\n"\
+            u"T: 热门单曲\n"\
+            u"G: 推荐单曲\n"\
+            u"E: 退出"
         self.con = threading.Condition()
         self.myNetease = MyNetease()
         self.playlist = self.myNetease.get_top_songlist()  #默认是热门歌单
+        self.mp3 = None
         t = threading.Thread(target=self.play)
         t.start()
 
@@ -47,10 +49,10 @@ class WxNeteaseMusic:
                     for data in user_playlist:
                         res += str(index) + ". " + data['name'] + "\n"
                         index += 1
-                    res += u"\n 输入 U 序号 切换歌单"
+                    res += u"\n 回复 (U 序号) 切换歌单"
             elif arg == u'M': #当前歌单播放列表
                 if len(self.playlist) == 0:
-                    res = u"当前播放列表为空，请回复 (U) 选择播放列表"
+                    res = u"当前播放列表为空，回复 (U) 选择播放列表"
                 i = 0
                 for song in self.playlist:
                     res += str(i) + ". " + song["song_name"] + "\n"
@@ -82,7 +84,11 @@ class WxNeteaseMusic:
                     res += str(i) + ". " + song["song_name"] + "\n"
                     i += 1
                 res += u'\n回复 (N) 播放下一曲， 回复 (N 序号)播放对应歌曲'
-
+            elif arg == u'E':#关闭音乐
+                self.playlist = []
+                if self.con.acquire():
+                    self.con.notifyAll()
+                    self.con.release()
             else:
                 try:
                     index = int(arg)
@@ -164,17 +170,28 @@ class WxNeteaseMusic:
     def play(self):
         while True:
             if self.con.acquire():
-                if self.playlist:
+                if len(self.playlist) != 0:
                     # 循环播放，取出第一首歌曲，放在最后的位置，类似一个循环队列
                     song = self.playlist[0]
                     self.playlist.remove(song)
                     self.playlist.append(song)
                     mp3_url = song["mp3_url"]
                     try: #有些音乐已失效，自动跳过
-                        mp3 = mp3play.load(mp3_url)
-                        mp3.play()
-                        self.con.notifyAll()
-                        self.con.wait(int(song.get('playTime')) / 1000)
+                        self.mp3 = mp3play.load(mp3_url)
+                        self.mp3.play()
                     except:
                         pass
+                    finally:
+                        self.con.notifyAll()
+                        self.con.wait(int(song.get('playTime')) / 1000)
+                else:
+                    try:
+                        self.mp3.stop()
+                    except:
+                        pass
+                    finally:
+                        self.con.notifyAll()
+                        self.con.wait()
+
+
 
