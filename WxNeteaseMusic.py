@@ -19,7 +19,7 @@ class WxNeteaseMusic:
             u"S: 歌曲搜索\n"\
             u"T: 热门单曲\n"\
             u"G: 推荐单曲\n"\
-            u"E: 退出"
+            u"E: 退出\n"
         self.con = threading.Condition()
         self.myNetease = MyNetease()
         self.playlist = self.myNetease.get_top_songlist()  #默认是热门歌单
@@ -36,10 +36,13 @@ class WxNeteaseMusic:
             if arg == u'H':  # 帮助信息
                 res = self.help_msg
             elif arg == u'N':  # 下一曲
-                if self.con.acquire():
-                    self.con.notifyAll()
-                    self.con.release()
-                res = u'切换成功，正在播放: ' +self. playlist[0].get('song_name')
+                if len(self.playlist) > 0:
+                    if self.con.acquire():
+                        self.con.notifyAll()
+                        self.con.release()
+                    res = u'切换成功，正在播放: ' +self. playlist[0].get('song_name')
+                else:
+                    res = u'当前播放列表为空'
             elif arg == u'U':  # 用户歌单
                 user_playlist = self.myNetease.get_user_playlist()
                 if user_playlist == -1:
@@ -89,6 +92,7 @@ class WxNeteaseMusic:
                 if self.con.acquire():
                     self.con.notifyAll()
                     self.con.release()
+                    res = u'播放已退出，回复 (U) 更新列表后可恢复播放'
             else:
                 try:
                     index = int(arg)
@@ -99,7 +103,7 @@ class WxNeteaseMusic:
                             self.con.notifyAll()
                             self.con.release()
                 except:
-                    res = u'错误'
+                    res = u'输入不正确'
         elif len(arg_list) == 2:  #接收信息长度为2
             arg1 = arg_list[0]
             arg2 = arg_list[1]
@@ -163,7 +167,7 @@ class WxNeteaseMusic:
                     album_name = song.get("album_name")
                     res = u"歌曲：" + song_name + u"\n歌手：" + artist + u"\n专辑：" + album_name
             except:
-                res = u"输入错误"
+                res = u"输入不正确"
 
         return res
 
@@ -181,17 +185,13 @@ class WxNeteaseMusic:
                         self.mp3.play()
                     except:
                         pass
-                    finally:
-                        self.con.notifyAll()
-                        self.con.wait(int(song.get('playTime')) / 1000)
                 else:
                     try:
                         self.mp3.stop()
                     except:
                         pass
-                    finally:
-                        self.con.notifyAll()
-                        self.con.wait()
+            self.con.notifyAll()
+            self.con.wait(int(song.get('playTime')) / 1000)
 
 
 
