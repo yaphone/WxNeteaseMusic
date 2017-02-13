@@ -1,14 +1,8 @@
-TITLE:微信网易云音乐播放器**
-CLASSIFY:技术**
-KEYWORDS:微信、网易云音乐、树莓派**
-
-------
-
 ## 来源
 
 ------
 
-之前毕业的时候实在闲的无聊，正好手头上有个树莓派，就写了个简单的网易云音乐播放器，代码很简单，写的也很乱，功能更简单--只能搜索歌曲，然后播放之，放在了github上，没想到竟然收到三十多颗星，实在惭愧，然后放年假，就想着把功能稍微完善一下，于是就有了WxNeteaseMusic，其实做的工作也不多，基于itchat和网易的python API，废话不多说，容我简单介绍一下吧。
+之前毕业的时候实在闲的无聊，正好手头上有个树莓派，就写了个简单的网易云音乐播放器，代码很简单，写的也很乱，功能更简单--只能搜索歌曲，然后播放之，放在了github上，没想到竟然收到三十多颗星，实在惭愧，然后放年假，就想着把功能稍微完善一下，于是就有了[WxNeteaseMusic](https://github.com/yaphone/WxNeteaseMusic)，其实做的工作也不多，基于[itchat](https://github.com/littlecodersh/ItChat)和[网易的python API](https://github.com/yaphone/NetEase-MusicBox)，废话不多说，容我简单介绍一下吧。
 
 ------
 
