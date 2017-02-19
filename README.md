@@ -91,6 +91,8 @@
 
 如果还不清楚的话，我还拍了个小视频，放在了优酷上，[请点击这里](http://v.youku.com/v_show/id_XMjUxODk5MDQxNg==.html)。
 
+[![视频演示](http://oj5vdtyuu.bkt.clouddn.com/screenshot.png)](http://v.youku.com/v_show/id_XMjUxODk5MDQxNg==.html?tpa=dW5pb25faWQ9MTAzMjUyXzEwMDAwMV8wMV8wMQ+)
+
 ## BUGS
 
 1.网易云音乐中部分音乐链接已失效，所以可能导致播放失败的情况，这种情况下，因为树莓派版使用的是omxplayer，而非[其它平台下的WxNeteaseMusic](https://github.com/yaphone/WxNeteaseMusic)使用的mp3play模块，omxplayer并不能感知到播放失败，还会一直等待当前播放失败的歌曲的时长才会播放下一首，或者其它命令触发切换动作，如（N）等。而电脑版使用的是python的mp3play包，播放失败时会自动跳过。建议使用网易音乐的客户端把播放失败的这首歌直接删除掉，这样在树莓派上播放时就不会卡住了。
