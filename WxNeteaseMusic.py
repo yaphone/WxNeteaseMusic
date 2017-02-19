@@ -180,6 +180,7 @@ class WxNeteaseMusic:
                     self.playlist.remove(song)
                     self.playlist.append(song)
                     mp3_url = song["mp3_url"]
+                    print mp3_url
                     try: #有些音乐已失效，自动跳过
                         self.mp3 = mp3play.load(mp3_url)
                         self.mp3.play()

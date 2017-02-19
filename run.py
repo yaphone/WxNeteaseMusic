@@ -9,5 +9,5 @@ def mp3_player(msg):
     res = wnm.msg_handler(text)
     return res
 
-itchat.auto_login(enableCmdQR=True)
+itchat.auto_login(enableCmdQR=False)
 itchat.run()
