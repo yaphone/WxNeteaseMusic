@@ -260,14 +260,6 @@ class NetEase(object):
         if pattern.match(username):
             return self.phone_login(username, password)
         action = 'https://music.163.com/weapi/login?csrf_token='
-        self.session.cookies.load()
-        csrf = ''
-        for cookie in self.session.cookies:
-            if cookie.name == '__csrf':
-                csrf = cookie.value
-        if csrf == '':
-            return False
-        action += csrf
         text = {
             'username': username,
             'password': password,
